@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterController : MonoBehaviour
+public class CharacterController : MonoBehaviour, IDamagable
 {
     private Rigidbody2D rb;
     private ControlActions actions;
@@ -18,14 +18,18 @@ public class CharacterController : MonoBehaviour
 
         actions.Character.Movement.performed  += ctx => moveVector = ctx.ReadValue<Vector2>();
         actions.Character.Movement.canceled  += ctx => moveVector = Vector2.zero;
+
+        actions.Character.Attack.performed  += ctx => Attack();
     }
+    public float maxspeed = 4;
     public LayerMask groundlayerMask;
-    // Update is called once per frame
     void FixedUpdate()
     {
         Vector2 sidewaysMovement = new Vector2(moveVector.x,0);
         rb.AddForce(sidewaysMovement*(speed*10));
-
+        if(moveVector.x < -.2f){transform.rotation = Quaternion.Euler(0,180,0);}else if(moveVector.x>.2f){
+            transform.rotation = Quaternion.Euler(0,0,0);
+        }
         if(moveVector.y > .5){Jump();}
         if(rb.IsTouchingLayers(groundlayerMask))
         {
@@ -36,6 +40,10 @@ public class CharacterController : MonoBehaviour
                 rb.velocity = rb.velocity/1.25f;
             }
         }
+        //limit max speed
+        float maxHorizontalSpeed = Mathf.Clamp(rb.velocity.y,-maxspeed,maxspeed);
+        float maxVerticalSpeed = Mathf.Clamp(rb.velocity.x,-maxspeed,maxspeed);
+        rb.velocity = new Vector2(maxVerticalSpeed,maxHorizontalSpeed);
     }
 
     bool canJump = true;
@@ -47,12 +55,21 @@ public class CharacterController : MonoBehaviour
             canJump = false;
         }
     }
-
-    private void CheckGround()
+    private void Attack()
     {
-        if(rb.IsTouchingLayers(6))
-        {
+        GetComponentInChildren<PickAxe>().Swing();
+    }
 
+    int health = 20;
+
+    public void TakeDamage(int damage)
+    {
+        health -= damage;
+        
+        if(health <=0)
+        {
+            //dead
+            Destroy(this.gameObject);
         }
     }
 }

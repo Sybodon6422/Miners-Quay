@@ -10,15 +10,19 @@ public class CharacterController : MonoBehaviour, IDamagable
     public float jumpPower;
     private Vector2 moveVector;
 
+    public Inventory inventory;
+
     void Start()
     {
         actions = new ControlActions();
         rb = GetComponent<Rigidbody2D>();
         actions.Enable();
+        inventory = new Inventory();
+        inventory.InitializeInventory();
 
         actions.Character.Movement.performed  += ctx => moveVector = ctx.ReadValue<Vector2>();
         actions.Character.Movement.canceled  += ctx => moveVector = Vector2.zero;
-
+        actions.Character.Jump.performed  += ctx => Jump();
         actions.Character.Attack.performed  += ctx => Attack();
     }
     public float maxspeed = 4;
@@ -30,23 +34,51 @@ public class CharacterController : MonoBehaviour, IDamagable
         if(moveVector.x < -.2f){transform.rotation = Quaternion.Euler(0,180,0);}else if(moveVector.x>.2f){
             transform.rotation = Quaternion.Euler(0,0,0);
         }
-        if(moveVector.y > .5){Jump();}
-        if(rb.IsTouchingLayers(groundlayerMask))
-        {
-            canJump = true;
-            if(moveVector == Vector2.zero)
-            {
-                //DAMPEN
-                rb.velocity = rb.velocity/1.25f;
-            }
-        }
+        if(moveVector.y > .5){}//try to climb
         //limit max speed
         float maxHorizontalSpeed = Mathf.Clamp(rb.velocity.y,-maxspeed,maxspeed);
         float maxVerticalSpeed = Mathf.Clamp(rb.velocity.x,-maxspeed,maxspeed);
         rb.velocity = new Vector2(maxVerticalSpeed,maxHorizontalSpeed);
+
+        if(moveVector == Vector2.zero)
+        {
+            if(grounded)
+            {
+                //DAMPEN
+                rb.velocity = rb.velocity/1.25f;
+                return;
+            }
+        }
+    }
+
+    private void GroundCheck()
+    {
+        if(rb.IsTouchingLayers(groundlayerMask))
+        {
+            List<ContactPoint2D> touching = new List<ContactPoint2D>();
+            rb.GetContacts(touching);
+            for (int i = 0; i < touching.Count; i++)
+            {
+                if(touching[i].normal.x != 0)
+                {
+                    //walljump
+                    if(!wallJump){canJump = true;}
+                    grounded = false;
+                }else
+                {
+                    grounded = true;
+                    canJump = true;
+                    return;
+                }   
+            }          
+        }
+        canJump = false;
+        grounded = false;
     }
 
     bool canJump = true;
+    bool grounded = true;
+    bool wallJump = false;
     private void Jump()
     {
         if(canJump)
@@ -72,4 +104,7 @@ public class CharacterController : MonoBehaviour, IDamagable
             Destroy(this.gameObject);
         }
     }
+
+    void OnCollisionEnter2D(Collision2D collision)  {   GroundCheck();  }
+    void OnCollisionExit2D(Collision2D collision)   {   GroundCheck();  }
 }

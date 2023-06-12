@@ -8,7 +8,6 @@ public class EffectManager : MonoBehaviour
 
     public static EffectManager Instance { get { return _instance; } }
 
-
     private void Awake()
     {
         if (_instance != null && _instance != this)
@@ -24,11 +23,5 @@ public class EffectManager : MonoBehaviour
     public void PlayEffect(Vector2 location, float angle, int effectID, Color effectColorOverRide)
     {
         var go = Instantiate(effectFAB,location,Quaternion.identity);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

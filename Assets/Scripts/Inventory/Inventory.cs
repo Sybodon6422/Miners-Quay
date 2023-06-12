@@ -12,6 +12,12 @@ public class Inventory
     {
         inventoryItems = new List<InventoryItem>();
     }
+
+    public void OpenInventory()
+    {
+        InventoryManager.I.UpdateInventory(inventoryItems);
+    }
+    
     public List<InventoryItem> GetInventory(){return inventoryItems;}
     public void AddToInventory(ItemSO itemSO, int quantity)
     {

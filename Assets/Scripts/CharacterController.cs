@@ -4,13 +4,16 @@ using UnityEngine;
 
 public class CharacterController : MonoBehaviour, IDamagable
 {
+    #region variables
     private Rigidbody2D rb;
     private ControlActions actions;
     public float speed;
     public float jumpPower;
     private Vector2 moveVector;
-
+    private Vector2 mousePos;
     public Inventory inventory;
+
+#endregion
 
     void Start()
     {
@@ -24,9 +27,13 @@ public class CharacterController : MonoBehaviour, IDamagable
         actions.Character.Movement.canceled  += ctx => moveVector = Vector2.zero;
         actions.Character.Jump.performed  += ctx => Jump();
         actions.Character.Attack.performed  += ctx => Attack();
+        actions.Character.Inventory.performed  += ctx => inventory.OpenInventory();
+        actions.Character.Enteract.performed  += ctx => Enteract();
+
+        actions.Character.MousePos.performed  += ctx => mousePos = ctx.ReadValue<Vector2>();
+        actions.Character.MousePos.canceled  += ctx => mousePos = Vector2.zero;
     }
-    public float maxspeed = 4;
-    public LayerMask groundlayerMask;
+
     void FixedUpdate()
     {
         Vector2 sidewaysMovement = new Vector2(moveVector.x,0);
@@ -50,6 +57,8 @@ public class CharacterController : MonoBehaviour, IDamagable
             }
         }
     }
+
+    #region movement
 
     private void GroundCheck()
     {
@@ -75,6 +84,9 @@ public class CharacterController : MonoBehaviour, IDamagable
         canJump = false;
         grounded = false;
     }
+
+    public float maxspeed = 4;
+    public LayerMask groundlayerMask;
 
     bool canJump = true;
     bool grounded = true;
@@ -107,4 +119,21 @@ public class CharacterController : MonoBehaviour, IDamagable
 
     void OnCollisionEnter2D(Collision2D collision)  {   GroundCheck();  }
     void OnCollisionExit2D(Collision2D collision)   {   GroundCheck();  }
+
+    #endregion
+
+    private void Enteract()
+    {
+        Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(mousePos);
+        Vector2 mousePos2D = new Vector2(mouseWorldPosition.x,mouseWorldPosition.y);
+        RaycastHit2D hit = Physics2D.Raycast(mousePos2D,Vector2.zero);
+        if(hit.collider != null)
+        {
+            IEnteractable enteractable = hit.collider.GetComponent<IEnteractable>();
+            if(enteractable != null)
+            {
+                enteractable.OnEnteract();
+            }
+        }
+    }
 }

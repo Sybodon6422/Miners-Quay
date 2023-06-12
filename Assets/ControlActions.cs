@@ -62,6 +62,24 @@ public partial class @ControlActions : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Inventory"",
+                    ""type"": ""Button"",
+                    ""id"": ""3fa15b8f-c2df-49cf-ac44-d6e3e1ee2fb0"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Enteract"",
+                    ""type"": ""Button"",
+                    ""id"": ""4ca9ef1b-6300-475e-a799-d5f9a61bc7f0"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -152,6 +170,28 @@ public partial class @ControlActions : IInputActionCollection2, IDisposable
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e135e144-4e28-4fa9-98c6-613153f55818"",
+                    ""path"": ""<Keyboard>/i"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Inventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6dfd4743-1191-4679-b020-6a7010fb78ab"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Enteract"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -164,6 +204,8 @@ public partial class @ControlActions : IInputActionCollection2, IDisposable
         m_Character_Attack = m_Character.FindAction("Attack", throwIfNotFound: true);
         m_Character_MousePos = m_Character.FindAction("MousePos", throwIfNotFound: true);
         m_Character_Jump = m_Character.FindAction("Jump", throwIfNotFound: true);
+        m_Character_Inventory = m_Character.FindAction("Inventory", throwIfNotFound: true);
+        m_Character_Enteract = m_Character.FindAction("Enteract", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -227,6 +269,8 @@ public partial class @ControlActions : IInputActionCollection2, IDisposable
     private readonly InputAction m_Character_Attack;
     private readonly InputAction m_Character_MousePos;
     private readonly InputAction m_Character_Jump;
+    private readonly InputAction m_Character_Inventory;
+    private readonly InputAction m_Character_Enteract;
     public struct CharacterActions
     {
         private @ControlActions m_Wrapper;
@@ -235,6 +279,8 @@ public partial class @ControlActions : IInputActionCollection2, IDisposable
         public InputAction @Attack => m_Wrapper.m_Character_Attack;
         public InputAction @MousePos => m_Wrapper.m_Character_MousePos;
         public InputAction @Jump => m_Wrapper.m_Character_Jump;
+        public InputAction @Inventory => m_Wrapper.m_Character_Inventory;
+        public InputAction @Enteract => m_Wrapper.m_Character_Enteract;
         public InputActionMap Get() { return m_Wrapper.m_Character; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -256,6 +302,12 @@ public partial class @ControlActions : IInputActionCollection2, IDisposable
                 @Jump.started -= m_Wrapper.m_CharacterActionsCallbackInterface.OnJump;
                 @Jump.performed -= m_Wrapper.m_CharacterActionsCallbackInterface.OnJump;
                 @Jump.canceled -= m_Wrapper.m_CharacterActionsCallbackInterface.OnJump;
+                @Inventory.started -= m_Wrapper.m_CharacterActionsCallbackInterface.OnInventory;
+                @Inventory.performed -= m_Wrapper.m_CharacterActionsCallbackInterface.OnInventory;
+                @Inventory.canceled -= m_Wrapper.m_CharacterActionsCallbackInterface.OnInventory;
+                @Enteract.started -= m_Wrapper.m_CharacterActionsCallbackInterface.OnEnteract;
+                @Enteract.performed -= m_Wrapper.m_CharacterActionsCallbackInterface.OnEnteract;
+                @Enteract.canceled -= m_Wrapper.m_CharacterActionsCallbackInterface.OnEnteract;
             }
             m_Wrapper.m_CharacterActionsCallbackInterface = instance;
             if (instance != null)
@@ -272,6 +324,12 @@ public partial class @ControlActions : IInputActionCollection2, IDisposable
                 @Jump.started += instance.OnJump;
                 @Jump.performed += instance.OnJump;
                 @Jump.canceled += instance.OnJump;
+                @Inventory.started += instance.OnInventory;
+                @Inventory.performed += instance.OnInventory;
+                @Inventory.canceled += instance.OnInventory;
+                @Enteract.started += instance.OnEnteract;
+                @Enteract.performed += instance.OnEnteract;
+                @Enteract.canceled += instance.OnEnteract;
             }
         }
     }
@@ -282,5 +340,7 @@ public partial class @ControlActions : IInputActionCollection2, IDisposable
         void OnAttack(InputAction.CallbackContext context);
         void OnMousePos(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
+        void OnInventory(InputAction.CallbackContext context);
+        void OnEnteract(InputAction.CallbackContext context);
     }
 }

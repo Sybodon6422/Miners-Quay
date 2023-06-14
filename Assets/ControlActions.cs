@@ -80,6 +80,15 @@ public partial class @ControlActions : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Build"",
+                    ""type"": ""Button"",
+                    ""id"": ""19b74642-800a-4744-8a05-e9e113a14a34"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -192,6 +201,17 @@ public partial class @ControlActions : IInputActionCollection2, IDisposable
                     ""action"": ""Enteract"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bb153e1e-1a39-441f-b43a-5f64ebd33068"",
+                    ""path"": ""<Keyboard>/b"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Build"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -206,6 +226,7 @@ public partial class @ControlActions : IInputActionCollection2, IDisposable
         m_Character_Jump = m_Character.FindAction("Jump", throwIfNotFound: true);
         m_Character_Inventory = m_Character.FindAction("Inventory", throwIfNotFound: true);
         m_Character_Enteract = m_Character.FindAction("Enteract", throwIfNotFound: true);
+        m_Character_Build = m_Character.FindAction("Build", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -271,6 +292,7 @@ public partial class @ControlActions : IInputActionCollection2, IDisposable
     private readonly InputAction m_Character_Jump;
     private readonly InputAction m_Character_Inventory;
     private readonly InputAction m_Character_Enteract;
+    private readonly InputAction m_Character_Build;
     public struct CharacterActions
     {
         private @ControlActions m_Wrapper;
@@ -281,6 +303,7 @@ public partial class @ControlActions : IInputActionCollection2, IDisposable
         public InputAction @Jump => m_Wrapper.m_Character_Jump;
         public InputAction @Inventory => m_Wrapper.m_Character_Inventory;
         public InputAction @Enteract => m_Wrapper.m_Character_Enteract;
+        public InputAction @Build => m_Wrapper.m_Character_Build;
         public InputActionMap Get() { return m_Wrapper.m_Character; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -308,6 +331,9 @@ public partial class @ControlActions : IInputActionCollection2, IDisposable
                 @Enteract.started -= m_Wrapper.m_CharacterActionsCallbackInterface.OnEnteract;
                 @Enteract.performed -= m_Wrapper.m_CharacterActionsCallbackInterface.OnEnteract;
                 @Enteract.canceled -= m_Wrapper.m_CharacterActionsCallbackInterface.OnEnteract;
+                @Build.started -= m_Wrapper.m_CharacterActionsCallbackInterface.OnBuild;
+                @Build.performed -= m_Wrapper.m_CharacterActionsCallbackInterface.OnBuild;
+                @Build.canceled -= m_Wrapper.m_CharacterActionsCallbackInterface.OnBuild;
             }
             m_Wrapper.m_CharacterActionsCallbackInterface = instance;
             if (instance != null)
@@ -330,6 +356,9 @@ public partial class @ControlActions : IInputActionCollection2, IDisposable
                 @Enteract.started += instance.OnEnteract;
                 @Enteract.performed += instance.OnEnteract;
                 @Enteract.canceled += instance.OnEnteract;
+                @Build.started += instance.OnBuild;
+                @Build.performed += instance.OnBuild;
+                @Build.canceled += instance.OnBuild;
             }
         }
     }
@@ -342,5 +371,6 @@ public partial class @ControlActions : IInputActionCollection2, IDisposable
         void OnJump(InputAction.CallbackContext context);
         void OnInventory(InputAction.CallbackContext context);
         void OnEnteract(InputAction.CallbackContext context);
+        void OnBuild(InputAction.CallbackContext context);
     }
 }

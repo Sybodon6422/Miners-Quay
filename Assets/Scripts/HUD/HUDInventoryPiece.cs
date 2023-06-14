@@ -4,22 +4,19 @@ using UnityEngine;
 using TMPro;
 public class HUDInventoryPiece : MonoBehaviour
 {
-    private ItemSO linkedItem;
-    private int itemAmmount;
-
+    InventoryItem itemRef;
     public TextMeshProUGUI nameText, ammountText;
 
     public void Setup(InventoryItem _item)
     {
-        linkedItem = _item.itemRef;
-        itemAmmount = _item.itemAmmount;
+        itemRef = _item;
 
-        nameText.text = linkedItem.itemName;
-        ammountText.text = itemAmmount.ToString();
+        nameText.text = itemRef.itemRef.itemName;
+        ammountText.text = itemRef.itemAmmount.ToString();
     }
     public void Clicked()
     {
-
+        HUDManager.I.InventoryItemClicked(itemRef);
     }
 
     // Update is called once per frame

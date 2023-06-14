@@ -15,6 +15,20 @@ public class CharacterController : MonoBehaviour, IDamagable
 
 #endregion
 
+    #region singleton
+    private static CharacterController _instance;
+    public static CharacterController I { get { return _instance; } }
+    private void Awake()
+    {
+        if (_instance != null && _instance != this)
+        {
+            Destroy(this.gameObject);
+        } else {
+            _instance = this;
+        }
+    }
+    #endregion
+
     void Start()
     {
         actions = new ControlActions();
@@ -26,6 +40,7 @@ public class CharacterController : MonoBehaviour, IDamagable
         actions.Character.Movement.performed  += ctx => moveVector = ctx.ReadValue<Vector2>();
         actions.Character.Movement.canceled  += ctx => moveVector = Vector2.zero;
         actions.Character.Jump.performed  += ctx => Jump();
+        actions.Character.Jump.canceled  += ctx => EndJump();
         actions.Character.Attack.performed  += ctx => Attack();
         actions.Character.Inventory.performed  += ctx => inventory.OpenInventory();
         actions.Character.Enteract.performed  += ctx => Enteract();
@@ -34,6 +49,8 @@ public class CharacterController : MonoBehaviour, IDamagable
         actions.Character.MousePos.canceled  += ctx => mousePos = Vector2.zero;
     }
 
+    [SerializeField] private float jumpTime = 0f;
+    [SerializeField] private float maxJumpTime = .1f;
     void FixedUpdate()
     {
         Vector2 sidewaysMovement = new Vector2(moveVector.x,0);
@@ -43,14 +60,22 @@ public class CharacterController : MonoBehaviour, IDamagable
         }
         if(moveVector.y > .5){}//try to climb
         //limit max speed
-        float maxHorizontalSpeed = Mathf.Clamp(rb.velocity.y,-maxspeed,maxspeed);
-        float maxVerticalSpeed = Mathf.Clamp(rb.velocity.x,-maxspeed,maxspeed);
-        rb.velocity = new Vector2(maxVerticalSpeed,maxHorizontalSpeed);
-
-        if(moveVector == Vector2.zero)
+        float verticalSpeedLimited = Mathf.Clamp(rb.velocity.y,-30,maxspeed);
+        float horizontalSpeedLimited = Mathf.Clamp(rb.velocity.x,-maxspeed,maxspeed);
+        if(jumping)
+        {
+            if(jumpTime > 0)
+            {
+                verticalSpeedLimited += jumpPower;
+                jumpTime -= Time.deltaTime;
+            }
+        }
+        rb.velocity = new Vector2(horizontalSpeedLimited,verticalSpeedLimited);
+        if(moveVector == Vector2.zero && !jumping)
         {
             if(grounded)
             {
+                jumpTime = maxJumpTime;
                 //DAMPEN
                 rb.velocity = rb.velocity/1.25f;
                 return;
@@ -75,6 +100,7 @@ public class CharacterController : MonoBehaviour, IDamagable
                     grounded = false;
                 }else
                 {
+                    jumpTime = maxJumpTime;
                     grounded = true;
                     canJump = true;
                     return;
@@ -91,14 +117,23 @@ public class CharacterController : MonoBehaviour, IDamagable
     bool canJump = true;
     bool grounded = true;
     bool wallJump = false;
+    bool jumping = false;
     private void Jump()
     {
         if(canJump)
         {
-            rb.AddForce(Vector2.up*jumpPower);
+            //initial jump burst
+            rb.AddForce(Vector2.up*jumpPower*100);
+            jumping = true;
             canJump = false;
         }
     }
+
+    private void EndJump()
+    {
+        jumping = false;
+    }
+
     private void Attack()
     {
         GetComponentInChildren<PickAxe>().Swing();

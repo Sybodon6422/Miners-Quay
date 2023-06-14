@@ -31,6 +31,11 @@ public class Inventory
         inventoryItems.Add(newItem);
     }
 
+    public void RemoveItem(InventoryItem itemToRemove)
+    {
+        inventoryItems.Remove(itemToRemove);
+    }
+
     public InventoryItem ItemMatch(ItemSO itemSO)
     {
         foreach (InventoryItem item in inventoryItems)

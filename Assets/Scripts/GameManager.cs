@@ -26,4 +26,14 @@ public class GameManager : MonoBehaviour
         var go = Instantiate(itemWorldFAB,position,Quaternion.identity);
         go.transform.parent = itemHolder;
     }
+
+    public void SpawnItem(ItemSO item, int amount, Vector2 position)
+    {
+        for (int i = 0; i < amount; i++)
+        {
+            var go = Instantiate(itemWorldFAB,position,Quaternion.identity);
+            go.transform.parent = itemHolder;
+            go.GetComponent<WorldItem>().thisItem = item;
+        }
+    }
 }

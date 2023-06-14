@@ -5,6 +5,8 @@ using UnityEngine;
 public class DamagableObject : MonoBehaviour, IDamagable
 {
     int health = 10;
+    public ItemSO itemToDrop;
+    public int dropAmount = 1;
     public void TakeDamage(int damage)
     {
         health -= damage;
@@ -12,15 +14,17 @@ public class DamagableObject : MonoBehaviour, IDamagable
         if(health <=0)
         {
             //dead
-            Destroy(this.gameObject);
+            Break();
         }
     }
 
-    // Start is called before the first frame update
-    void Start()
+    public void Break()
     {
-        
+        //spawn item
+        if(itemToDrop != null)
+        {
+            GameManager.I.SpawnItem(itemToDrop, dropAmount, transform.position);
+        }
+        Destroy(this.gameObject);
     }
-
-    // Update is called once per frame
 }

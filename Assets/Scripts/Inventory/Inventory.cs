@@ -7,33 +7,43 @@ using UnityEngine;
 public class Inventory
 {
     private List<InventoryItem> inventoryItems;
+    public List<InventoryItem> GetInventory(){return inventoryItems;}
 
     public void InitializeInventory()
     {
         inventoryItems = new List<InventoryItem>();
     }
-
-    public void OpenInventory()
-    {
-        InventoryManager.I.UpdateInventory(inventoryItems);
-    }
-    
-    public List<InventoryItem> GetInventory(){return inventoryItems;}
     public void AddToInventory(ItemSO itemSO, int quantity)
     {
         if (HasItem(itemSO))
         {
             ItemMatch(itemSO).itemAmmount += quantity;
+            TryUpdateInventory();
             return;
         }
 
         InventoryItem newItem = new InventoryItem(itemSO, quantity);
         inventoryItems.Add(newItem);
+        TryUpdateInventory();
+    }
+    
+    public void AddToInventory(InventoryItem item)
+    {
+        if (HasItem(item.itemRef))
+        {
+            ItemMatch(item.itemRef).itemAmmount += item.itemAmmount;
+            TryUpdateInventory();
+            return;
+        }else{
+            inventoryItems.Add(item);
+            TryUpdateInventory();
+        }
     }
 
     public void RemoveItem(InventoryItem itemToRemove)
     {
         inventoryItems.Remove(itemToRemove);
+        TryUpdateInventory();
     }
 
     public InventoryItem ItemMatch(ItemSO itemSO)
@@ -61,4 +71,9 @@ public class Inventory
 
         return false;
     }
+
+    private void TryUpdateInventory(){if(OnInventoryUpdated != null) OnInventoryUpdated();}
+    public event Action OnInventoryUpdated;
+    public delegate void InventoryUpdatedAction();
+
 }

@@ -4,14 +4,13 @@ using UnityEngine;
 
 public class IndoorViewToggle : MonoBehaviour
 {
-    [SerializeField] private GameObject indoorView;
-    [SerializeField] private GameObject outdoorView;
+    [SerializeField] private GameObject[] indoorView;
+    [SerializeField] private GameObject[] outdoorView;
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.tag == "Player")
         {
-            indoorView.SetActive(true);
-            outdoorView.SetActive(false);
+            SwapView(true);
         }
     }
 
@@ -19,8 +18,19 @@ public class IndoorViewToggle : MonoBehaviour
     {
         if (other.gameObject.tag == "Player")
         {
-            indoorView.SetActive(false);
-            outdoorView.SetActive(true);
+            SwapView(false);
+        }
+    }
+
+    private void SwapView(bool indoor)
+    {
+        foreach (GameObject obj in indoorView)
+        {
+            obj.SetActive(indoor);
+        }
+        foreach (GameObject obj in outdoorView)
+        {
+            obj.SetActive(!indoor);
         }
     }
 }

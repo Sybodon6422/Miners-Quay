@@ -18,11 +18,18 @@ public class Furnace : MonoBehaviour ,IEnteractable
         finishedItem = new InventoryItem(null,0);
     }
 
+    void Start()
+    {
+        FurnaceInputProcessor.I.SetIcon(0, false);
+        FurnaceInputProcessor.I.SetIcon(1, false);
+    }
+
     public bool TryAddSmeltItem(InventoryItem itemToAdd)
     {
         if(itemToSmelt.itemRef == null)
         {
             itemToSmelt = itemToAdd;
+            FurnaceInputProcessor.I.SetIcon(0, true);
 
             return true;
         }
@@ -33,6 +40,36 @@ public class Furnace : MonoBehaviour ,IEnteractable
             return true;
         }
         return false;
+    }
+
+    public void TryRemoveSmeltItem()
+    {
+        if(itemToSmelt.itemRef != null)
+        {
+            CharacterController.I.inventory.AddToInventory(itemToSmelt.itemRef,1);
+            itemToSmelt.itemAmmount -= 1;
+            if(itemToSmelt.itemAmmount <= 0)
+            {
+                itemToSmelt = new InventoryItem(null,0);
+                FurnaceInputProcessor.I.SetIcon(0, false);
+                CancelCraft();
+            }
+        }
+    }
+
+    public void TryRemoveFinishedItem()
+    {
+        if(finishedItem.itemRef != null)
+        {
+            CharacterController.I.inventory.AddToInventory(finishedItem.itemRef,finishedItem.itemAmmount);
+            finishedItem = new InventoryItem(null,0);
+            FurnaceInputProcessor.I.SetIcon(1, false);
+        }
+    }
+
+    public void CancelCraft()
+    {
+        smeltTime = 10f;
     }
 
     private float smeltTime = 10f;
@@ -48,10 +85,12 @@ public class Furnace : MonoBehaviour ,IEnteractable
                 if(finishedItem.itemRef == null)
                 {
                     finishedItem = FurnaceInputProcessor.I.recipeBook.GetOutputItem(itemToSmelt.itemRef);
+                    FurnaceInputProcessor.I.SetIcon(1, true);
                     itemToSmelt.itemAmmount -= 1;
                     if(itemToSmelt.itemAmmount <= 0)
                     {
                         itemToSmelt = new InventoryItem(null,0);
+                        FurnaceInputProcessor.I.SetIcon(0, false);
                     }
                 }else
                 {
@@ -60,6 +99,7 @@ public class Furnace : MonoBehaviour ,IEnteractable
                     if(itemToSmelt.itemAmmount <= 0)
                     {
                         itemToSmelt = new InventoryItem(null,0);
+                        FurnaceInputProcessor.I.SetIcon(0, false);
                     }
                 }
             }

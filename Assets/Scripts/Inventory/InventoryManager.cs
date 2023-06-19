@@ -25,11 +25,22 @@ public class InventoryManager : MonoBehaviour
     [SerializeField] Transform holder;
     void Start(){gameObject.SetActive(false);}
     bool thisIsActive = false;
-    public void UpdateInventory(List<InventoryItem> inventoryItems)
+
+    public void ToggleInventory()
     {
         gameObject.SetActive(!thisIsActive);
         thisIsActive = !thisIsActive;
-
+        if(thisIsActive){
+            CharacterController.I.inventory.OnInventoryUpdated += UpdateInventory;
+            UpdateInventory();
+        }else
+        {
+            CharacterController.I.inventory.OnInventoryUpdated -= UpdateInventory;
+        }
+    }
+    public void UpdateInventory()
+    {
+        List<InventoryItem> inventoryItems = CharacterController.I.inventory.GetInventory();
         for (int i = 0; i < holder.childCount; i++)
         {
             Destroy(holder.transform.GetChild(i).gameObject);

@@ -23,7 +23,7 @@ public class PickAxe : MonoBehaviour
         if(!canSwing){return;}
         pickCollider.enabled = true;
         animationC.Play();
-        coolDownTime = .7f;
+        coolDownTime = .3f;
         canSwing = false;
         
     }

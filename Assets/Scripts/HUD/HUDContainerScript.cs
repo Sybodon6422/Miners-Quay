@@ -1,8 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
-public class HUDInventoryPiece : MonoBehaviour
+using UnityEngine;
+
+public class HUDContainerScript : MonoBehaviour
 {
     InventoryItem itemRef;
     public TextMeshProUGUI nameText, ammountText;
@@ -16,6 +15,6 @@ public class HUDInventoryPiece : MonoBehaviour
     }
     public void Clicked()
     {
-        HUDManager.I.InventoryItemClicked(itemRef);
+        ContainerInventoryHUD.I.ItemClicked(itemRef);
     }
 }

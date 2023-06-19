@@ -12,6 +12,10 @@ public class CharacterController : MonoBehaviour, IDamagable
     private Vector2 moveVector;
     private Vector2 mousePos;
     public Inventory inventory;
+    private bool inside;
+    public float maxOxygen = 100;
+    private float oxygen = 100;
+    private float damageCoolDown = .2f;
 
 #endregion
 
@@ -36,23 +40,26 @@ public class CharacterController : MonoBehaviour, IDamagable
         actions.Enable();
         inventory = new Inventory();
         inventory.InitializeInventory();
+        oxygen = maxOxygen;
 
         actions.Character.Movement.performed  += ctx => moveVector = ctx.ReadValue<Vector2>();
         actions.Character.Movement.canceled  += ctx => moveVector = Vector2.zero;
         actions.Character.Jump.performed  += ctx => Jump();
         actions.Character.Jump.canceled  += ctx => EndJump();
         actions.Character.Attack.performed  += ctx => Attack();
-        actions.Character.Inventory.performed  += ctx => inventory.OpenInventory();
+        actions.Character.Inventory.performed  += ctx => InventoryManager.I.ToggleInventory();
         actions.Character.Enteract.performed  += ctx => Enteract();
 
         actions.Character.MousePos.performed  += ctx => mousePos = ctx.ReadValue<Vector2>();
         actions.Character.MousePos.canceled  += ctx => mousePos = Vector2.zero;
     }
-
-    [SerializeField] private float jumpTime = 0f;
-    [SerializeField] private float maxJumpTime = .1f;
     void FixedUpdate()
     {
+        HUDManager.I.UpdateOxygenBar(oxygen,maxOxygen);
+        damageCoolDown = Mathf.Clamp(damageCoolDown-Time.deltaTime,0,.2f);
+        if(inside){oxygen = Mathf.Clamp(oxygen+Time.deltaTime,0,maxOxygen);}
+        else{oxygen = Mathf.Clamp(oxygen-Time.deltaTime,0,maxOxygen);}
+        if(oxygen <= 0){TakeDamage(1);}
         Vector2 sidewaysMovement = new Vector2(moveVector.x,0);
         rb.AddForce(sidewaysMovement*(speed*10));
         if(moveVector.x < -.2f){transform.rotation = Quaternion.Euler(0,180,0);}else if(moveVector.x>.2f){
@@ -84,6 +91,16 @@ public class CharacterController : MonoBehaviour, IDamagable
     }
 
     #region movement
+    [Header("Movement")]
+    public float maxspeed = 4;
+    public LayerMask groundlayerMask;
+    [SerializeField] private float jumpTime = 0f;
+    [SerializeField] private float maxJumpTime = .1f;
+
+    private bool canJump = true;
+    private bool grounded = true;
+    private bool wallJump = false;
+    private bool jumping = false;
 
     private void GroundCheck()
     {
@@ -110,14 +127,6 @@ public class CharacterController : MonoBehaviour, IDamagable
         canJump = false;
         grounded = false;
     }
-
-    public float maxspeed = 4;
-    public LayerMask groundlayerMask;
-
-    bool canJump = true;
-    bool grounded = true;
-    bool wallJump = false;
-    bool jumping = false;
     private void Jump()
     {
         if(canJump)
@@ -143,7 +152,9 @@ public class CharacterController : MonoBehaviour, IDamagable
 
     public void TakeDamage(int damage)
     {
+        if(damageCoolDown <= 0){return;}
         health -= damage;
+        damageCoolDown = .2f;
         
         if(health <=0)
         {
@@ -161,7 +172,7 @@ public class CharacterController : MonoBehaviour, IDamagable
     {
         Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(mousePos);
         Vector2 mousePos2D = new Vector2(mouseWorldPosition.x,mouseWorldPosition.y);
-        RaycastHit2D hit = Physics2D.Raycast(mousePos2D,Vector2.zero);
+        RaycastHit2D hit = Physics2D.Raycast(mousePos2D,Vector2.zero,3f,LayerMask.GetMask("EnteractionOnly"));
         if(hit.collider != null)
         {
             IEnteractable enteractable = hit.collider.GetComponent<IEnteractable>();

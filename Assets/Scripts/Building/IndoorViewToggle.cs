@@ -11,6 +11,7 @@ public class IndoorViewToggle : MonoBehaviour
         if (other.gameObject.tag == "Player")
         {
             SwapView(true);
+            other.gameObject.GetComponent<CharacterController>().PlayerEnter();
         }
     }
 
@@ -19,6 +20,7 @@ public class IndoorViewToggle : MonoBehaviour
         if (other.gameObject.tag == "Player")
         {
             SwapView(false);
+            other.gameObject.GetComponent<CharacterController>().PlayerExit();
         }
     }
 

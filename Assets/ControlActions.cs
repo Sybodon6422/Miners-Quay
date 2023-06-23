@@ -89,6 +89,15 @@ public partial class @ControlActions : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""BaseStats"",
+                    ""type"": ""Button"",
+                    ""id"": ""6548d813-038c-435a-a695-128e9facce8b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -212,6 +221,17 @@ public partial class @ControlActions : IInputActionCollection2, IDisposable
                     ""action"": ""Build"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8753d84e-c546-4b4b-af8b-53d5953fc76c"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""BaseStats"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -227,6 +247,7 @@ public partial class @ControlActions : IInputActionCollection2, IDisposable
         m_Character_Inventory = m_Character.FindAction("Inventory", throwIfNotFound: true);
         m_Character_Enteract = m_Character.FindAction("Enteract", throwIfNotFound: true);
         m_Character_Build = m_Character.FindAction("Build", throwIfNotFound: true);
+        m_Character_BaseStats = m_Character.FindAction("BaseStats", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -293,6 +314,7 @@ public partial class @ControlActions : IInputActionCollection2, IDisposable
     private readonly InputAction m_Character_Inventory;
     private readonly InputAction m_Character_Enteract;
     private readonly InputAction m_Character_Build;
+    private readonly InputAction m_Character_BaseStats;
     public struct CharacterActions
     {
         private @ControlActions m_Wrapper;
@@ -304,6 +326,7 @@ public partial class @ControlActions : IInputActionCollection2, IDisposable
         public InputAction @Inventory => m_Wrapper.m_Character_Inventory;
         public InputAction @Enteract => m_Wrapper.m_Character_Enteract;
         public InputAction @Build => m_Wrapper.m_Character_Build;
+        public InputAction @BaseStats => m_Wrapper.m_Character_BaseStats;
         public InputActionMap Get() { return m_Wrapper.m_Character; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -334,6 +357,9 @@ public partial class @ControlActions : IInputActionCollection2, IDisposable
                 @Build.started -= m_Wrapper.m_CharacterActionsCallbackInterface.OnBuild;
                 @Build.performed -= m_Wrapper.m_CharacterActionsCallbackInterface.OnBuild;
                 @Build.canceled -= m_Wrapper.m_CharacterActionsCallbackInterface.OnBuild;
+                @BaseStats.started -= m_Wrapper.m_CharacterActionsCallbackInterface.OnBaseStats;
+                @BaseStats.performed -= m_Wrapper.m_CharacterActionsCallbackInterface.OnBaseStats;
+                @BaseStats.canceled -= m_Wrapper.m_CharacterActionsCallbackInterface.OnBaseStats;
             }
             m_Wrapper.m_CharacterActionsCallbackInterface = instance;
             if (instance != null)
@@ -359,6 +385,9 @@ public partial class @ControlActions : IInputActionCollection2, IDisposable
                 @Build.started += instance.OnBuild;
                 @Build.performed += instance.OnBuild;
                 @Build.canceled += instance.OnBuild;
+                @BaseStats.started += instance.OnBaseStats;
+                @BaseStats.performed += instance.OnBaseStats;
+                @BaseStats.canceled += instance.OnBaseStats;
             }
         }
     }
@@ -372,5 +401,6 @@ public partial class @ControlActions : IInputActionCollection2, IDisposable
         void OnInventory(InputAction.CallbackContext context);
         void OnEnteract(InputAction.CallbackContext context);
         void OnBuild(InputAction.CallbackContext context);
+        void OnBaseStats(InputAction.CallbackContext context);
     }
 }

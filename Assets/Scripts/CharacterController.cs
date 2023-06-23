@@ -13,6 +13,8 @@ public class CharacterController : MonoBehaviour, IDamagable
     private Vector2 mousePos;
     public Inventory inventory;
     private bool inside;
+    public void PlayerEnter(){inside = true;}
+    public void PlayerExit(){inside = false;}
     public float maxOxygen = 100;
     private float oxygen = 100;
     private float damageCoolDown = .2f;
@@ -58,7 +60,7 @@ public class CharacterController : MonoBehaviour, IDamagable
         HUDManager.I.UpdateOxygenBar(oxygen,maxOxygen);
         damageCoolDown = Mathf.Clamp(damageCoolDown-Time.deltaTime,0,.2f);
         if(inside){oxygen = Mathf.Clamp(oxygen+Time.deltaTime,0,maxOxygen);}
-        else{oxygen = Mathf.Clamp(oxygen-Time.deltaTime,0,maxOxygen);}
+        else{oxygen = Mathf.Clamp(oxygen-Time.deltaTime,-1,maxOxygen);}
         if(oxygen <= 0){TakeDamage(1);}
         Vector2 sidewaysMovement = new Vector2(moveVector.x,0);
         rb.AddForce(sidewaysMovement*(speed*10));
@@ -152,7 +154,7 @@ public class CharacterController : MonoBehaviour, IDamagable
 
     public void TakeDamage(int damage)
     {
-        if(damageCoolDown <= 0){return;}
+        if(damageCoolDown > 0){return;}
         health -= damage;
         damageCoolDown = .2f;
         

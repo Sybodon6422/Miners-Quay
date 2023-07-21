@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Furnace : MonoBehaviour ,IEnteractable
 {
-    public void OnEnteract()
+    public void OnEnteract(Astronaut astronaut)
     {
         HUDManager.I.OpenFurnaceMenu(this);
     }

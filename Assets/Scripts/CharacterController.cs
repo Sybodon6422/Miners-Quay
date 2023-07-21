@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterController : MonoBehaviour, IDamagable
+public class CharacterController : Astronaut
 {
     #region variables
     private Rigidbody2D rb;
@@ -12,12 +12,8 @@ public class CharacterController : MonoBehaviour, IDamagable
     private Vector2 moveVector;
     private Vector2 mousePos;
     public Inventory inventory;
-    private bool inside;
-    public void PlayerEnter(){inside = true;}
-    public void PlayerExit(){inside = false;}
-    public float maxOxygen = 100;
-    private float oxygen = 100;
-    private float damageCoolDown = .2f;
+
+    [SerializeField] private GameObject interactionShow;
 
 #endregion
 
@@ -55,13 +51,11 @@ public class CharacterController : MonoBehaviour, IDamagable
         actions.Character.MousePos.performed  += ctx => mousePos = ctx.ReadValue<Vector2>();
         actions.Character.MousePos.canceled  += ctx => mousePos = Vector2.zero;
     }
-    void FixedUpdate()
+    internal override void BaseUpdateCall()
     {
         HUDManager.I.UpdateOxygenBar(oxygen,maxOxygen);
-        damageCoolDown = Mathf.Clamp(damageCoolDown-Time.deltaTime,0,.2f);
-        if(inside){oxygen = Mathf.Clamp(oxygen+Time.deltaTime,0,maxOxygen);}
-        else{oxygen = Mathf.Clamp(oxygen-Time.deltaTime,-1,maxOxygen);}
-        if(oxygen <= 0){TakeDamage(1);}
+        CheckForInteractions();
+
         Vector2 sidewaysMovement = new Vector2(moveVector.x,0);
         rb.AddForce(sidewaysMovement*(speed*10));
         if(moveVector.x < -.2f){transform.rotation = Quaternion.Euler(0,180,0);}else if(moveVector.x>.2f){
@@ -90,6 +84,28 @@ public class CharacterController : MonoBehaviour, IDamagable
                 return;
             }
         }
+    }
+
+    void CheckForInteractions()
+    {
+        bool showInteraction = false;
+        if(canEnterBuilding)
+        {
+            showInteraction = true;
+        }
+        Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(mousePos);
+        Vector2 mousePos2D = new Vector2(mouseWorldPosition.x,mouseWorldPosition.y);
+        RaycastHit2D hit = Physics2D.Raycast(mousePos2D,Vector2.zero,3f,LayerMask.GetMask("EnteractionOnly"));
+        if(hit.collider != null)
+        {
+            IEnteractable enteractable = hit.collider.GetComponent<IEnteractable>();
+            if(enteractable != null)
+            {
+                showInteraction = true;
+            }
+        }
+
+        ToggleInteractionObject(showInteraction);
     }
 
     #region movement
@@ -150,21 +166,6 @@ public class CharacterController : MonoBehaviour, IDamagable
         GetComponentInChildren<PickAxe>().Swing();
     }
 
-    int health = 20;
-
-    public void TakeDamage(int damage)
-    {
-        if(damageCoolDown > 0){return;}
-        health -= damage;
-        damageCoolDown = .2f;
-        
-        if(health <=0)
-        {
-            //dead
-            Destroy(this.gameObject);
-        }
-    }
-
     void OnCollisionEnter2D(Collision2D collision)  {   GroundCheck();  }
     void OnCollisionExit2D(Collision2D collision)   {   GroundCheck();  }
 
@@ -172,6 +173,10 @@ public class CharacterController : MonoBehaviour, IDamagable
 
     private void Enteract()
     {
+        if(canEnterBuilding)
+        {
+            buildingToEnter.OnEnteract(this);
+        }
         Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(mousePos);
         Vector2 mousePos2D = new Vector2(mouseWorldPosition.x,mouseWorldPosition.y);
         RaycastHit2D hit = Physics2D.Raycast(mousePos2D,Vector2.zero,3f,LayerMask.GetMask("EnteractionOnly"));
@@ -180,8 +185,13 @@ public class CharacterController : MonoBehaviour, IDamagable
             IEnteractable enteractable = hit.collider.GetComponent<IEnteractable>();
             if(enteractable != null)
             {
-                enteractable.OnEnteract();
+                enteractable.OnEnteract(this);
             }
         }
+    }
+
+    private void ToggleInteractionObject(bool turnOn)
+    {
+        interactionShow.SetActive(turnOn);
     }
 }

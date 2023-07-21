@@ -4,12 +4,30 @@ using UnityEngine;
 
 public class Building : MonoBehaviour
 {
-    [SerializeField] private List<Collider2D> colliders;
     public BuildingHUB hub;
+
+    public SpriteRenderer[] outdoorView;
+
     void Start()
     {
         hub = GetComponentInParent<BuildingHUB>();
         hub.AddBuilding(this);
+    }
+
+    public void PlayerEnter(Astronaut astronaut)
+    {
+        foreach (SpriteRenderer view in outdoorView)
+        {
+            view.enabled = false;
+        }
+    }
+
+    public void PlayerExit(Astronaut astronaut)
+    {
+        foreach (SpriteRenderer view in outdoorView)
+        {
+            view.enabled = true;
+        }
     }
 
     public virtual void TickUpdate()

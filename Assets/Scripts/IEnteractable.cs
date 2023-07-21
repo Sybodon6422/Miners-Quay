@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface IEnteractable
 {
-    void OnEnteract();
+    void OnEnteract(Astronaut astronaut);
 }

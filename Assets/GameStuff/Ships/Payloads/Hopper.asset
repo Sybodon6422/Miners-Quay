@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b96d97b107c6d824ba9c6d43c079701b, type: 3}
+  m_Name: Hopper
+  m_EditorClassIdentifier: 
+  payloadName: Hopper
+  payloadIcon: {fileID: -6908495239559571746, guid: c6fc798bc8fb6d049b69c3999b7a1092, type: 3}
+  cost: 50
+  crew: 2
+  maxCargo: 15
+  grossTonnage: 0.5
+  maxDistance: 0.005

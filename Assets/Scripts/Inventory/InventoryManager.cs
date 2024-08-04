@@ -31,16 +31,16 @@ public class InventoryManager : MonoBehaviour
         gameObject.SetActive(!thisIsActive);
         thisIsActive = !thisIsActive;
         if(thisIsActive){
-            CharacterController.I.inventory.OnInventoryUpdated += UpdateInventory;
+            CharacterLocomotion.I.inventory.OnInventoryUpdated += UpdateInventory;
             UpdateInventory();
         }else
         {
-            CharacterController.I.inventory.OnInventoryUpdated -= UpdateInventory;
+            CharacterLocomotion.I.inventory.OnInventoryUpdated -= UpdateInventory;
         }
     }
     public void UpdateInventory()
     {
-        List<InventoryItem> inventoryItems = CharacterController.I.inventory.GetInventory();
+        List<InventoryItem> inventoryItems = CharacterLocomotion.I.inventory.GetInventory();
         for (int i = 0; i < holder.childCount; i++)
         {
             Destroy(holder.transform.GetChild(i).gameObject);

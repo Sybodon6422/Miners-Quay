@@ -4,5 +4,15 @@ using UnityEngine;
 
 public interface IEnteractable
 {
-    void OnEnteract(Astronaut astronaut);
+    EnteractionData OnEnteract(Astronaut astro);
+
+    public class EnteractionData
+    {
+        public bool astronautEnteractionOnly;
+
+        public EnteractionData(bool astroOnly)
+        {
+            astronautEnteractionOnly = astroOnly;
+        }
+    }
 }

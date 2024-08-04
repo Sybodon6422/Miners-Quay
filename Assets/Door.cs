@@ -6,7 +6,8 @@ public class Door : MonoBehaviour, IEnteractable
 {
     [SerializeField] Transform insidePortSpot, outsidePortSpot;
     public Building master;
-    public void OnEnteract(Astronaut astronaut)
+
+    public IEnteractable.EnteractionData OnEnteract(Astronaut astronaut)
     {
         if(astronaut.InsideBuilding)
         {
@@ -20,6 +21,7 @@ public class Door : MonoBehaviour, IEnteractable
             astronaut.BuildingSwitch(true);
             master.PlayerEnter(astronaut);
         }
+        return new IEnteractable.EnteractionData(true);
     }
 
     public void OnTriggerEnter2D(Collider2D other)

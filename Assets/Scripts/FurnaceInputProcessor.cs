@@ -31,7 +31,7 @@ public class FurnaceInputProcessor : MonoBehaviour
         {
             if(linkedFurnace.TryAddSmeltItem(_item))
             {
-                CharacterController.I.inventory.RemoveItem(_item);
+                CharacterLocomotion.I.inventory.RemoveItem(_item);
             }
             return;
         }

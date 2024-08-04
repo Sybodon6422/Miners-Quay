@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class HUDManager : MonoBehaviour
@@ -26,6 +27,47 @@ public class HUDManager : MonoBehaviour
         CloseAllMenus();
     }
 
+    [SerializeField] private Menu plantTravelMenu, shipBuildingMenu;
+
+    #region World management
+
+    [SerializeField] private GameObject planetTravelMenuFab;
+    [SerializeField] private Transform planetTravelMenuHolder;
+
+    public void LoadPlanet(CelestialBody planet)
+    {
+        //load planet
+        //load bg
+        //set player planet
+        //set player gravity
+        //set player oxygen
+    }
+
+    //TODO: add a way to check what planets are available to travel to based on research and available fuel
+    public void OpenWorldsTravelMenu(bool moon)
+    {
+        //destroy all children
+        foreach (Transform child in planetTravelMenuHolder)
+        {
+            Destroy(child.gameObject);
+        }
+
+        if (moon)
+        {
+            GameObject go = Instantiate(planetTravelMenuFab, planetTravelMenuHolder);
+            go.GetComponent<PlanetTravelOption>().SetupTravelOption(GameManager.I.GetBody(0));
+        }
+        else
+        {
+            GameObject go = Instantiate(planetTravelMenuFab, planetTravelMenuHolder);
+            go.GetComponent<PlanetTravelOption>().SetupTravelOption(GameManager.I.GetBody(1));
+        }
+
+        plantTravelMenu.OpenMenu();
+    }
+
+    #endregion
+
     #region furnace/container
     private Transform furnacePos, playerPos;
     private bool furnaceMenuOpen = false;
@@ -33,7 +75,7 @@ public class HUDManager : MonoBehaviour
     public void OpenFurnaceMenu(Furnace furnaceRef)
     {
         furnacePos =  furnaceRef.transform;
-        playerPos = CharacterController.I.transform;
+        playerPos = CharacterLocomotion.I.transform;
 
         if(Vector2.Distance(playerPos.position,furnacePos.position) > 4)
         {
@@ -63,13 +105,31 @@ public class HUDManager : MonoBehaviour
 
     #endregion
 
+    #region Earth Menus
+
+    public void OpenShipBuildingMenu()
+    {
+        shipBuildingMenu.OpenMenu();
+    }
+
+    public void CloseShipBuildingMenu()
+    {
+        shipBuildingMenu.CloseMenu();
+    }
+
+    #endregion
+
     public void CloseAllMenus()
     {
         furnaceMenu.SetActive(false);
-        
+        plantTravelMenu.CloseMenu();
+        shipBuildingMenu.CloseMenu();
+
         furnaceMenuOpen = false;
         containerMenuOpen = false;
     }
+
+    #region astronaut specific
 
     public void InventoryItemClicked(InventoryItem _item)
     {
@@ -79,17 +139,32 @@ public class HUDManager : MonoBehaviour
         }  else if(containerMenuOpen)
         {
             ContainerInventoryHUD.I.ContainerRef.inventory.AddToInventory(_item);
-            CharacterController.I.inventory.RemoveItem(_item);
+            CharacterLocomotion.I.inventory.RemoveItem(_item);
         }
     }
 
     [SerializeField] private RectTransform oxygenBarRect;
+    [SerializeField] private TextMeshProUGUI oxygenText;
     public void UpdateOxygenBar(float _oxygen,float maxOxygen)
     {
         //scale oxygen float to 0,1
+        oxygenText.text = _oxygen.ToString("F0");
         float oxygenScaled = _oxygen / maxOxygen;
-        oxygenBarRect.sizeDelta = new Vector2(oxygenScaled*100,20);
+        oxygenBarRect.sizeDelta = new Vector2(oxygenScaled*125,20);
     }
+
+    #endregion
+
+    #region stats
+
+    [SerializeField] private TextMeshProUGUI moneyText;
+
+    public void UpdateMoneyText(int money)
+    {
+        moneyText.text = "$" + money.ToString();
+    }
+
+    #endregion
 
     private void FixedUpdate()
     {

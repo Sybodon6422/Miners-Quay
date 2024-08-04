@@ -10,7 +10,7 @@ public class WorldItem : MonoBehaviour
     {
         if(collision.gameObject.CompareTag("Player"))
         {
-            collision.gameObject.GetComponent<CharacterController>().inventory.AddToInventory(thisItem,1);
+            collision.gameObject.GetComponent<CharacterLocomotion>().inventory.AddToInventory(thisItem,1);
             Destroy(gameObject);
         }
     }

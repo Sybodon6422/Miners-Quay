@@ -6,7 +6,7 @@ public class ContainerInventoryHUD : HUDMenu
 {
     #region singleton
     private static ContainerInventoryHUD _instance;
-    public static ContainerInventoryHUD I { get { return _instance; } }
+    public static ContainerInventoryHUD I{ get { return _instance; }  }
 
     private void Awake()
     {
@@ -51,7 +51,7 @@ public class ContainerInventoryHUD : HUDMenu
 
     public void ItemClicked(InventoryItem itemRef)
     {
-        CharacterController.I.inventory.AddToInventory(itemRef);
+        CharacterLocomotion.I.inventory.AddToInventory(itemRef);
         containerRef.inventory.RemoveItem(itemRef);
     }
 

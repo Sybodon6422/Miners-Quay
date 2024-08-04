@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b96d97b107c6d824ba9c6d43c079701b, type: 3}
+  m_Name: Drone1
+  m_EditorClassIdentifier: 
+  payloadName: Drone 1
+  payloadIcon: {fileID: -6899147836374543136, guid: 0ab9fe90df24ac44aadc6c5a141608bf, type: 3}
+  cost: 200
+  crew: 0
+  maxCargo: 0
+  grossTonnage: 0.5
+  maxDistance: 2

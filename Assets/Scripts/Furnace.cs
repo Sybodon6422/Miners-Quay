@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class Furnace : MonoBehaviour ,IEnteractable
 {
-    public void OnEnteract(Astronaut astronaut)
+    public IEnteractable.EnteractionData OnEnteract(Astronaut astronaut)
     {
         HUDManager.I.OpenFurnaceMenu(this);
+        return new IEnteractable.EnteractionData(false);
     }
     
     private InventoryItem itemToSmelt;
@@ -46,7 +47,7 @@ public class Furnace : MonoBehaviour ,IEnteractable
     {
         if(itemToSmelt.itemRef != null)
         {
-            CharacterController.I.inventory.AddToInventory(itemToSmelt.itemRef,1);
+            CharacterLocomotion.I.Astronaut.inventory.AddToInventory(itemToSmelt.itemRef,1);
             itemToSmelt.itemAmmount -= 1;
             if(itemToSmelt.itemAmmount <= 0)
             {
@@ -61,7 +62,7 @@ public class Furnace : MonoBehaviour ,IEnteractable
     {
         if(finishedItem.itemRef != null)
         {
-            CharacterController.I.inventory.AddToInventory(finishedItem.itemRef,finishedItem.itemAmmount);
+            CharacterLocomotion.I.Astronaut.inventory.AddToInventory(finishedItem.itemRef,finishedItem.itemAmmount);
             finishedItem = new InventoryItem(null,0);
             FurnaceInputProcessor.I.SetIcon(1, false);
         }

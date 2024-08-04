@@ -10,8 +10,9 @@ public class StorageContainer : MonoBehaviour, IEnteractable
         inventory.InitializeInventory();
     }
 
-    public void OnEnteract(Astronaut astronaut)
+    public IEnteractable.EnteractionData OnEnteract(Astronaut astronaut)
     {
         HUDManager.I.OpenContainerMenu(this);
+        return new IEnteractable.EnteractionData(false);
     }
 }
